@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dask-VTK Cross Section Example</title>
+    <script src="https://unpkg.com/@kitware/dask-vtk@0.1.1/dist/dask-vtk.js"></script>
+    <style>
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        #view {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="view"></div>
+</div>
+<script>
+    var view = {{ view_json|safe }};
+    view.set_container(document.getElementById('view'));
+    view.init();
+    view.render();
+</script>
+</body>
+</html>

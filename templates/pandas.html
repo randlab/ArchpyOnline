@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Borehole Data Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+        
+        #borehole_map {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Borehole Data Report</h1>
+
+    <h2>Layers</h2>
+    <table>
+        <tr>
+            <th>Borehole ID</th>
+            <th>Layers</th>
+        </tr>
+        {% for bh_id, layers in layers.items() %}
+            <tr>
+                <td>{{ bh_id }}</td>
+                <td>
+                    <table>
+                        <tr>
+                            <th>Strat ID</th>
+                            <th>Facies ID</th>
+                            <th>Top</th>
+                            <th>Bottom</th>
+                        </tr>
+                        {% for layer in layers %}
+                            <tr>
+                                <td>{{ layer['Strat_ID'] }}</td>
+                                <td>{{ layer['Facies_ID'] }}</td>
+                                <td>{{ layer['top'] }}</td>
+                                <td>{{ layer['bot'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Plots</h2>
+    <div>
+        <h3>Borehole Depth Distribution</h3>
+        <img src="data:image/png;base64,{{ depth_distribution_plot }}" alt="Borehole Depth Distribution">
+    </div>
+    <div>
+        <h3>Facies Occurrence</h3>
+        <img src="data:image/png;base64,{{ facies_occurrence_plot }}" alt="Facies Occurrence">
+    </div>
+    <div>
+        <h3>Depth vs. Facies</h3>
+        <img src="data:image/png;base64,{{ depth_facies_plot }}" alt="Depth vs. Facies">
+    </div>
+    <div id="borehole_map">
+        <h3>Borehole Map</h3>
+        {{ borehole_map | safe }}
+    </div>
+</body>
+</html>

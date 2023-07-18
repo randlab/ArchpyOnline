@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo5.ico') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta charset="utf-8" />
+    <title>Parameters Selection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    /* Loader */
+        #loader {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: white;
+          z-index: 9999;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        #loader img {
+          width: 100px;
+          height: 100px;
+        }
+
+        #loader h2 {
+          font-family: Georgia, serif;
+          font-size: 29px;
+          letter-spacing: 2px;
+          word-spacing: 2px;
+          color: #7A7A7A;
+          font-weight: normal;
+          text-decoration: none;
+          font-style: normal;
+          font-variant: small-caps;
+          text-transform: none;
+        }
+    </style>
+
+</head>
+<body>
+  <header>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Code Logo" class="logo">
+  </header>
+    <div id="loader">
+    <h2> Retrieving the data</h2> <br><br><br><br>
+      <img src="{{url_for('static', filename='loader.gif')}}" alt="Loading..." />
+    </div>
+    <div class="wrapper">
+    <br>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Area')" id="defaultOpen">Modeling Area Definition</button>
+        <button class="tablinks" onclick="openTab(event, 'BHInArea')">Boreholes Map</button>
+        <button class="tablinks" onclick="openTab(event, 'Hillshade')">Topography</button>
+        <button class="tablinks" onclick="openTab(event, 'SedThick')">Pre-Existing Quaternary Thickness model</button>
+        <button class="tablinks" onclick="openTab(event, 'Table1')">Borehole Table</button>
+        <button class="tablinks" onclick="openTab(event, 'Table2')">Layers Table</button>
+        <button class="tablinks" onclick="openTab(event, 'ModelParams')"><b>Model Parameters</b></button>
+    </div>
+
+    <div id="Area" class="tabcontent">
+        <h1>Initial Processing...</h1>
+        <h3>The map shows the area of the model.</h3>
+
+        <img src="/plotarea/{{result['userid']}}" alt="Area" style="display: inline-block; max-width: 50%;">
+        
+        <div class="text-Container">
+        This is the precomputing page. On this page, you can review the available data on the site selected. The boreholes were gathered and automatically processed from the SITG of the Geneva Canton, as part of their open-access policy. The data descriptor can be found on <a href="https://ge.ch/sitg/fiche/2998" taget=blank>the SITG Website</a>. The digital elevation model (DEM) and the Bedrock Elevation Model were retrieved from the Swiss Federal Office of Topography Swisstopo, using a WMS query. 
+        <br>
+        The last tab, Model Parameters, allows to select the parameters for the realization of the target model. It also provide statistics on the existing data.    
+        </div>
+    </div>
+
+    <div id="BHInArea" class="tabcontent">
+        <h3>This map shows the boreholes present in the area</h3>
+        <img src="/plotBH/{{result['userid']}}" style="display: inline-block; max-width: 50%;" alt="Area">
+        <div class="text-Container">
+        <table border = 1>
+    {% for key, value in result.items() %}
+    <tr>
+       <th> {{ key }} </th>
+       <td> {{ value|safe }} </td>
+    </tr>
+    {% endfor %}
+    <tr>
+       <th> Open the borehole database report (popup) </th>
+       <td> <input type="button" value="See the Data" onclick="openBhWindow()" /> </td>
+    </tr>
+    </table>
+    </div>
+    </div>
+
+    <div id="Hillshade" class="tabcontent">
+        <h3>This map shows the hillshade of the area, derived from Swisstopo alti3d DEM</h3>
+        <img src="/plotHillshade/{{result['userid']}}" alt="Hillshade">
+    </div>
+
+    <div id="SedThick" class="tabcontent">
+        <h3>This map shows the hillshade of the area, derived from Swisstopo alti3d DEM</h3>
+        <img src="/plotSedThick/{{result['userid']}}" alt="Sediment Thickness Model">
+        <br><br>
+        <img src="{{url_for('static', filename='legend_Swisstopo_SedThick.png')}}" alt="Legend" width=300 />
+    </div>
+    <div id="Table1" class="tabcontent">
+        {{tables['bh_inarea']|safe}}
+    </div>
+
+    <div id="Table2" class="tabcontent">
+        {{tables['db_bh_inarea']|safe}}
+    </div>
+
+    <div id="ModelParams" class="tabcontent">
+       <div class="container active">
+	        
+		          <p id="cellLimit"></p>
+              <table class="tg" style="undefined;table-layout: fixed; width: 100%">
+              <form method="POST" action="/ArchPy_init" id="formParams" enctype="multipart/form-data">
+              <br>
+              <tr>
+              <input type="submit" id="submitButton" form="formParams" class="formParamsSub" value="Run ArchPy with these parameters">
+              </tr>
+                    <tr>
+                    <td colspan="3">Model Parameters</td>
+                    <input type="hidden" id="userid" name="userid" value="{{result['userid']}}">
+                  </tr>
+                  <tr>
+                    <td>Model Name</td>
+                    <td></td>
+                    <td><input type="text" id="modelName" name="modelName" value="My Quaternary Model"><br></td>
+                  </tr>
+                  <tr>
+                    <td>Cell Size (X and Y)</td>
+                    <td style="font-weight: bold;" id=res_x_u></td>
+                    <td>
+                    <input type="range" min="10" max="100" value="25" class="slider" name= "res_x" id="res_x">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Cell Size (Z)</td>
+                    <td style="font-weight: bold;" id=res_z_u></td>
+                    <td>
+                    <input type="range" min="2" max="10" value="5" class="slider" name= "res_z" id="res_z">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Number of Cells in X</td>
+                    <td style="font-weight: bold;" id="Nx"></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>in Y</td>
+                    <td style="font-weight: bold;" id="Ny"></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>in Z</td>
+                    <td style="font-weight: bold;" id="Nz"></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>Top of the model (by default equal to the DEM, but can be lowered)</td>
+                    <td style="font-weight: bold;" id=ModelTop_u></td>
+                    <td>
+                    <input type="range" min="{{model['TopoMin']}}" max="{{model['TopoMax']}}" value="{{model['TopoMax']}}" class="slider" id="ModelTop" name= "ModelTop">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Bottom of the model (by default equal to the minimum DEM - 100m)</td>
+                    <td style="font-weight: bold;" id=ModelBot_u></td>
+                    <td>
+                    <input type="range" min="{{model['TopoMin']-100}}" max="{{model['TopoMax']}}" value="{{model['TopoMin']-100}}" class="slider" id="ModelBot" name= "ModelBot">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Use These parameters</td>
+                    <td></td>
+                    <td><input type="submit" id="submitButton2" class="formParamsSub" form="formParams" value="Run ArchPy"></td>
+                  </tr>
+                  
+                  <input type="hidden" id="nx_form" name="nx" value="1" />
+                  <input type="hidden" id="ny_form" name="ny" value="1" />
+                  <input type="hidden" id="nz_form" name="nz" value="1" />
+                  
+                                  
+                </form>
+                </table>
+                
+          </div>
+
+
+        <div class="container active">
+                <table class="tg" style="undefined;table-layout: fixed; width: 100%">
+                <tbody>
+                  <tr>
+                    <td colspan="3">Data Statistics</td>
+                  </tr>
+                  <tr>
+                    <td>Boreholes Depth</td>
+                    <td>min</td>
+                    <td>{{model['bhMinDepth']}}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>mean</td>
+                    <td>{{model['bhMeanDepth']}}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>max</td>
+                    <td>{{model['bhMaxDepth']}}</td>
+                  </tr>
+                  <tr>
+                    <td>Min Quaternary  Elevation in area from</td>
+                    <td>Boreholes</td>
+                    <td>{{model['bhMaxQuatDepth']}}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>Swisstopo model</td>
+                    <td>{{model['SwissTopoMinQuatAlt']}}</td>
+                  </tr>
+                  <tr>
+                    <td>Quaternary Thickness in Area according to "Toit du Rocher" model </td>
+                    <td>min</td>
+                    <td>{{model['SwissTopoMinDepth']}}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>mean</td>
+                    <td>{{model['SwissTopoMeanDepth']}}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>max</td>
+                    <td>{{model['SwissTopoMaxDepth']}}</td>
+                  </tr>
+                  <tr>
+                    <td>Topography</td>
+                    <td>min</td>
+                    <td>{{model['TopoMin']}}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>mean</td>
+                    <td>{{model['TopoMean']}}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>max</td>
+                    <td>{{model['TopoMax']}}</td>
+                  </tr>
+                </tbody>
+                </table>
+                </div>
+                
+    </div>
+
+  </div>
+  <footer>
+    <img src="{{url_for('static', filename='unine.png')}}" alt="University Logo" class="university-logo">
+    <p>&copy; 2023 PheniX Project. Information automatically generated, given with no liability</p>
+  </footer>
+
+    <script>
+
+      // Code to hide the loader after 5 seconds
+      window.addEventListener("load", function () {
+        setTimeout(function () {
+          document.getElementById("loader").style.display = "none";
+        }, 5000);
+      });
+
+        function openBhWindow() {
+            BhWindow = window.open('BoreholesAnalysis/{{result['userid']}}', '', 'width=800,height=800,menubar=no,toolbar=no');
+            
+        }
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        window.onload = function () {
+            startTab();
+            };
+
+        function startTab() {
+            document.getElementById("defaultOpen").click();
+
+        }
+
+        var slider1 = document.getElementById("res_x");
+        var slider1_value = document.getElementById("res_x_u");
+        var Nx = document.getElementById("Nx");
+        var Ny = document.getElementById("Ny");
+        slider1_value.innerHTML = slider1.value;
+        Nx.innerHTML = Math.ceil( {{model['Lx']}} / slider1.value);
+        Ny.innerHTML = Math.ceil( {{model['Ly']}} / slider1.value);
+        document.getElementById("nx_form").value = Math.ceil( {{model['Lx']}} / slider1.value);
+        document.getElementById("ny_form").value = Math.ceil( {{model['Ly']}} / slider1.value);
+        
+        let submitButton = document.getElementById("submitButton");
+        let submitButton2 = document.getElementById("submitButton2");
+        let output = document.getElementById("cellLimit");
+
+        var slider2 = document.getElementById("res_z");
+        var slider2_value = document.getElementById("res_z_u");
+        var Nz = document.getElementById("Nz");
+        slider2_value.innerHTML = slider2.value;
+
+        var slider3 = document.getElementById("ModelTop");
+        var slider3_value = document.getElementById("ModelTop_u");
+        slider3_value.innerHTML = slider3.value;
+        
+        var slider4 = document.getElementById("ModelBot");
+        var slider4_value = document.getElementById("ModelBot_u");
+        slider4_value.innerHTML = slider4.value;
+
+        Nz.innerHTML = Math.ceil((slider3.value - slider4.value) / slider2.value);
+        document.getElementById("nz_form").value = Math.ceil((slider3.value - slider4.value) / slider2.value);
+       
+        
+        function checkInput(nx, ny) {
+            let product = nx * ny;
+            output.innerHTML = "In order to ensure a fair use of the ressources, a limit of 14400 cells in Nx*Ny has be imposed. That corresponds to 120 x 120 cells. Number of cells with the present parameters: " + product;
+            
+            if (product > 14400) {
+                submitButton.disabled = true;
+                submitButton2.disabled = true;
+                submitButton.style.backgroundColor = "gray";
+                submitButton2.style.backgroundColor = "gray";
+                output.style.color = "red";
+                output.style.fontWeight = "bold";
+            } else {
+                submitButton.disabled = false;
+                submitButton2.disabled = false;
+                submitButton.style.backgroundColor = "#005C94";
+                submitButton2.style.backgroundColor = "#005C94";
+                output.style.color = "initial";
+                output.style.fontWeight = "initial";
+            }
+        }
+        
+        checkInput(document.getElementById("nx_form").value, document.getElementById("ny_form").value);
+        
+        slider1.oninput = function() {
+            slider1_value.innerHTML = this.value;
+            Nx.innerHTML = Math.ceil( {{model['Lx']}} / this.value);
+            Ny.innerHTML = Math.ceil( {{model['Ly']}} / this.value);
+            document.getElementById("nx_form").value = Math.ceil( {{model['Lx']}} / this.value);
+            document.getElementById("ny_form").value = Math.ceil( {{model['Ly']}}  / this.value);
+            checkInput( Math.ceil( {{model['Lx']}} / this.value),  Math.ceil( {{model['Ly']}} / this.value));
+        }
+
+        slider2.oninput = function() {
+            slider2_value.innerHTML = this.value;
+            Nz.innerHTML = Math.ceil((slider3.value - slider4.value) / this.value);
+            document.getElementById("nz_form").value = Math.ceil((slider3.value - slider4.value) / this.value);
+        }
+
+        slider3.oninput = function() {
+            slider3_value.innerHTML = this.value;
+            Nz.innerHTML = Math.ceil((this.value - slider4.value) / slider2.value);
+            document.getElementById("nz_form").value = Math.ceil((this.value - slider4.value) / slider2.value);
+        }
+        slider4.oninput = function() {
+            slider4_value.innerHTML = this.value;
+            Nz.innerHTML = Math.ceil((slider3.value - this.value) / slider2.value);
+            document.getElementById("nz_form").value = Math.ceil((slider3.value - this.value) / slider2.value);
+        }
+
+     
+    </script>
+
+    </body>
+</html>
+
+
+

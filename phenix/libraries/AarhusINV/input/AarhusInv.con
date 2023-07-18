@@ -1,0 +1,163 @@
+ [AarhusInvSettings]
+ 
+ 
+Version                  =           21  
+ 
+ 
+OutputGen                =            1  
+OutputLog                =            0  
+OutputCov                =            0  
+EmoWriteIte              =            1  
+ 
+ 
+NCPUs                    =            1  
+MinApriori               =   1.0000E+60  
+MaxStep                  =   3.0000E+00  
+MinStep                  =   1.1000E+00  
+StepUp                   =   1.5000E+00  
+StepDown                 =   2.0000E+00  
+NStepUp                  =            2  
+ReUseG                   =            1  
+CalcAnalysis             =            1  
+CoupledAnalysisType      =           -1  
+SubsetNormChangeSize     =   2.0000E-01  
+RelSubsetNormChange      =   2.0000E-01  
+RelNormChange            =   7.0000E-03  
+RelNormChangeD           =   7.0000E-03  
+SolverType               =           -1  
+NIteAlt                  =            5  
+NIteAng                  =            7  
+NIteTau                  =            0  
+NIteC                    =            0  
+RelNormChangeB           =   5.0000E-02  
+NApproxDeriv             =            0  
+NApproxFor               =            0  
+EndFull                  =            1  
+EndMinStep               =            1  
+GeneralizedMS1stExp      =   1.3500E+00  
+GeneralizedMS2ndExp      =   2.0000E+00  
+Broyden                  =            0  
+NFullDeriv               =            4  
+IRLSType                 =            0  
+ 
+ 
+LogModel                 =            0  
+LogData                  =1  
+LogNeg                   =            0  
+LogDepth                 =            0  
+DepthRef                 =1  
+AltRef                   =            0  
+ 
+ 
+DOI                      =1  
+DOINLayers               =30  
+DOIDepth1                =1  
+DOIDepthN                =200  
+DOIAbsHigh               =   1.5000E+00  
+DOIAbsLow                =   7.5000E-01  
+DOIRelHigh               =   5.0000E-02  
+DOIRelLow                =   2.0000E-02  
+DOICAAHigh               =   2.0000E+00  
+DOICAALow                =   5.0000E+00  
+ 
+ 
+DampInit                 =   5.0000E+03  
+MaxDampInit              =   1.0000E+06  
+DampInitUp               =   3.0000E+00  
+DampFactor               =   3.0000E+00  
+NMaxDamp                 =           20  
+FirstTwoWayDamp          =            6  
+NoDampConstrOnly         =            0  
+PartypeDamping           =            0  
+ 
+ 
+MinRes                   =   1.0000E-01  
+MaxRes                   =   2.0000E+04  
+MinThick                 =   1.0000E-01  
+MaxThick                 =   5.0000E+02  
+MinImagSigma             =   1.0000E-04  
+MaxImagSigma             =   1.0000E+02  
+MaxM0                    =   8.0000E+02  
+MinM0                    =   1.0000E-01  
+MaxTau                   =   1.0000E+02  
+MinTau                   =   1.0000E-03  
+MaxC                     =   6.0000E-01  
+MinC                     =   1.0000E-01  
+MaxPhi                   =   2.0000E+02  
+MinPhi                   =   1.0000E-02  
+MaxfL                    =   1.0000E+00  
+MinfL                    =   1.0000E-03  
+MinW                     =   1.0000E-02  
+MaxW                     =   1.0000E+00  
+MinT2Star                =   5.0000E-03  
+MaxT2Star                =   1.5000E+00  
+MinCmrs                  =   3.0000E-01  
+MaxCmrs                  =   1.0000E+00  
+MinShift                 =   1.0000E-05  
+MaxShift                 =   6.2800E+00  
+MinVel                   =   1.0000E+01  
+MaxVel                   =   7.5000E+03  
+MinDens                  =   5.0000E+02  
+MaxDens                  =   4.0000E+03  
+MinPois                  =   1.0000E-03  
+MaxPois                  =   4.9000E-01  
+MaxEps                   =   1.0000E+04  
+MinEps                   =   1.0000E+00  
+MaxTemp                  =   3.5000E+01  
+MinTemp                  =   5.0000E+00  
+RefTemp                  =   2.5000E+01  
+ 
+ 
+FDenseCSLow              =           10  
+FDenseCSHigh             =           14  
+FDenseJLow               =            6  
+FDenseJHigh              =           10  
+AddNoise2Scr             =            0  
+SRConvCoarsestSampling   =            6  
+SRConvNSamplingSteps     =            4  
+SRConvRefinementLimit    =   1.0000E-01  
+TDFiltConvCoarsestSamp   =           12  
+TDFiltConvNSamplingSteps =            2  
+TDFiltConvRefineLimit    =   1.0000E-02  
+ 
+ 
+cFAI                     =   7.5000E-01  
+alphaFAI                 =   4.5000E-01  
+nbTxZFAIcon              =          100  
+nbSigRefFAI              =            8  
+SigRefFAI                =   1.0000E-01  1.0000E+00  1.0000E+01  1.0000E+02  1.0000E+03  2.0000E+03  5.0000E+03  1.0000E+04  
+ 
+ 
+EmoWriteFilterWaveInfo   =            0  
+LowerDecade              =           -8  
+UpperDecade              =            4  
+AutoExtend               =            1  
+LowResPPD                =            1  
+HighResPPD               =            5  
+LowResNCM                =           15  
+HighResNCM               =           15  
+DOINCM                   =          100  
+LowResMinRelChange       =            1  
+HighResMinRelChange      =            1  
+LowResIPFactor           =   1.0100E+02  
+HighResIPFactor          =   1.0000E+00  
+ApproxCPAtrans           =            1  
+ 
+ 
+SWDMethod                =            0  
+SWDSearchStep            =   2.0000E-05  
+ 
+ 
+MinDepth                 =   1.0000E-02  
+MaxRelDepth              =   5.0000E+00  
+MinXDisc                 =   2.5000E-02  
+MaxXDisc                 =   1.0000E+02  
+ZDiscSwitch              =   2.0000E-01  
+NDecShallow              =            5  
+NDecDeep                 =           20  
+NSampInShallow           =           32  
+NSampInDeep              =           22  
+NMinLay                  =            0  
+PrintKernels             =            0  
+ThetaqNo                 =           10  
+ 

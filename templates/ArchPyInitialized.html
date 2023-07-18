@@ -1,0 +1,124 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo5.ico') }}">
+
+    <title>Compute App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ArchPy Started">
+      
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+
+  </head>
+  <body>
+  <header>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Code Logo" class="logo">
+    <h1>ArchPy</h1>
+  </header>
+    <div class="wrapper">
+      <h1>Compute App</h1>
+        <table border = 1>
+    {% for key, value in data.items() %}
+    <tr>
+       <th> {{ key }} </th>
+       <td> {{ value }} </td>
+    </tr>
+    {% endfor %}
+    </table>
+      <div id="status" class="mt-3">Status: Pending</div>
+      <div id="progress" class="progress mt-3">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div id="result" class="mt-3"></div>
+      <div id="button" style="display: none"><button id="Redirect"> See the results </button></div>
+      <div id="completed-steps" class="mt-3">
+      <div class="completed-step">Loading the data <span style="color: green; font-weight: bold;">Done</span></div>
+      <div class="completed-step">Model Initialized <span style="color: green; font-weight: bold;">Done</span></div>
+      <div class="completed-step">DEM Processing and resampling <span style="color: green; font-weight: bold;">Done</span></div>
+      <div class="completed-step">Boreholes Processing <span style="color: green; font-weight: bold;">Done</span></div>   
+      </div>
+
+    </div>
+    </div>
+  <footer>
+    <img src="{{url_for('static', filename='unine.png')}}" alt="University Logo" class="university-logo">
+    <p>&copy; 2023 PheniX Project. Information automatically generated, given with no liability</p>
+  </footer>
+    <script>
+      document.getElementById("Redirect").onclick = function () {
+        location.href = "/visu/{{data['userid']}}";
+            };
+name = 
+      $(function() {
+  // Initialize progress bar at 0%
+  $('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
+
+  // Store the previous step
+  var previousStep = '';
+
+  // Wait for 1 second before calling pollStatus for the first time
+  setTimeout(pollStatus, 1000);
+
+  function pollStatus() {
+  $.ajax({
+    type: 'GET',
+    url: '/status/{{ task_id }}',
+    success: function(response) {
+      if (response.status === 'PENDING') {
+        $('#status').text('Status: Pending, awaiting available computing resources');
+      } else if (response.status === 'PROGRESS') {
+        var progress = Math.round(response.progress * 100);
+        var stepStatus = response.step_status;
+
+        $('#status').text('Status: In progress (' + progress + '%). Current Step: ' + stepStatus);
+        $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
+
+        // Update completed steps
+        if (previousStep !== stepStatus) {
+          addCompletedStep(previousStep);
+          previousStep = stepStatus;
+        }
+
+        setTimeout(pollStatus, 1000);
+      } else if (response.status === 'SUCCESS') {
+        var result = response.result;
+
+        $('#status').text('Status: Complete');
+        $('.progress-bar').css('width', 100 + '%').attr('aria-valuenow', 100);
+        $('.progress-bar').removeClass('progress-bar-striped progress-bar-animated');
+        $('#result').text('Result: ' + result);
+        document.getElementById('button').style.display = 'block';
+
+        // Add the final completed step
+        addCompletedStep(previousStep);
+      } else {
+        $('#status').text('Status: Error');
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error(error);
+    }
+  });
+}
+
+
+  // Add a completed step to the display
+  function addCompletedStep(step) {
+    if (step) {
+      var completedStepHtml = '<div class="completed-step">' + step + ' <span style="color: green; font-weight: bold;">Done</span></div>';
+      $('#completed-steps').append(completedStepHtml);
+    }
+  }
+});
+
+
+
+    </script>
+  </body>
+</html>

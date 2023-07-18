@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo5.ico') }}">
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to ArchPy Online</title>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        #mapid {
+            height: 500px;
+        }
+        
+        .map-container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        #mapid {
+            height: 80vh;
+            width: 100%;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button#btn-submit {
+            display: block;
+            width: 400px;
+            height: 100px;
+            margin: 20px auto;
+            background-color: #005C94;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        button#btn-submit:hover {
+            background-color: #0069d9;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Code Logo" class="logo">
+    </header>
+    <div class="wrapper">
+    <p><center>To begin with your model creation, use the polygon tool on the left of the map and draw your area of interest. Once your polygon is drawn, click the submit button</center></p>
+    <div class="map-container">
+        
+    <div id="mapid"></div>
+    <br>
+    <button id="btn-submit" onclick="submitPolygon()">Submit this Polygon !</button>
+    </div>
+    </div>
+
+
+    <footer>
+        <img src="{{url_for('static', filename='unine.png')}}" alt="University Logo" class="university-logo">
+        <p>&copy; 2023 PheniX Project. Information automatically generated, given with no liability</p>
+    </footer>
+    
+    <script>
+        function drawRestrictedAreaPolygon() {
+        // Read the CSV file
+        Papa.parse("{{url_for('static', filename='extend_gva.csv')}}", {
+            download: true,
+            header: true,
+            complete: function (results) {
+                // Extract the X and Y coordinates and create LatLng objects
+                var coordinates = results.data.map(function (row) {
+                    return [parseFloat(row.y), parseFloat(row.x)];
+                });
+                console.log(coordinates)
+                // Remove any row containing NaN values
+                coordinates = coordinates.filter(function (coord) {
+                    return !isNaN(coord[0]) && !isNaN(coord[1]);
+                });
+                // Create a polygon with red color and 3px width
+                L.polygon(coordinates, {
+                    color: 'red',
+                    weight: 4
+                }).addTo(map);
+                // Create a custom control for the legend
+                var testAreaLegend = L.control({ position: 'bottomright' });
+
+                testAreaLegend.onAdd = function (map) {
+                    var div = L.DomUtil.create('div', 'info legend');
+                    div.innerHTML = '<span style="display: inline-block; width: 15px; height: 15px; margin-right: 5px; background-color: red; border: 1px solid black;"></span>Test Area';
+                    return div;
+                };
+
+                testAreaLegend.addTo(map);
+            }
+        });
+    }
+    
+          function addConditioningPoints() {
+          // Read the CSV file
+          Papa.parse("{{url_for('static', filename='boreholes.csv')}}", {
+              download: true,
+              header: true,
+              complete: function (results) {
+                  // Extract the X and Y coordinates and create LatLng objects
+                  var coordinates = results.data.map(function (row) {
+                      return [parseFloat(row.X), parseFloat(row.Y)];
+                  });
+                  console.log(coordinates)
+                  // Remove any row containing NaN values
+                  coordinates = coordinates.filter(function (coord) {
+                      return !isNaN(coord[0]) && !isNaN(coord[1]);
+                  });
+                  // Create markers for each coordinate and add to the map
+                  coordinates.forEach(function (coord) {
+                      L.circleMarker(coord, {
+                          radius: 2,
+                          fillColor: "#ff7800",
+                          color: "#000",
+                          weight: 1,
+                          opacity: 1,
+                          fillOpacity: 0.8,
+                      }).addTo(map);
+                  });
+                  
+                  // Create a custom control for the boreholes legend
+            var boreholesLegend = L.control({ position: 'bottomright' });
+
+            boreholesLegend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                div.innerHTML = '<span style="display: inline-block; width: 15px; height: 15px; margin-right: 5px; background-color: #ff7800; border: 1px solid black;"></span>Boreholes';
+                return div;
+            };
+
+            boreholesLegend.addTo(map);
+              }
+          });
+      }
+
+        var map = L.map('mapid').setView([46.20533, 6.14559], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems,
+                edit: true,
+                remove: true
+            },
+            draw: {
+                circle: false,
+                circlemarker: false,
+                marker: false,
+                polyline: false,
+                rectangle: false,
+                polygon: {
+                    allowIntersection: false,
+                    showArea: true,
+                    drawError: {
+                        color: '#b00b00',
+                        timeout: 1000
+                    },
+                    shapeOptions: {
+                        color: '#bada55'
+                    }
+                }
+            }
+        });
+        map.addControl(drawControl);
+
+      map.on(L.Draw.Event.CREATED, function (event) {
+            var polygonCount = 0;
+            drawnItems.eachLayer(function (layer) {
+                if (layer instanceof L.Polygon) {
+                    polygonCount++;
+                }
+            });
+
+            if (polygonCount >= 1) {
+                alert('You can only draw one polygon. Please delete the existing one if you want to draw a new one.');  // show a pop-up with the error message
+            } else {
+                drawnItems.addLayer(event.layer);
+            }
+        });
+
+        map.on(L.Draw.Event.DELETED, function (event) {
+            // Add drawControl back to the map
+            map.addControl(drawControl);
+        });
+        drawRestrictedAreaPolygon();
+        addConditioningPoints();
+
+        function submitPolygon() {
+            var latlngs = [];
+            drawnItems.eachLayer(function (layer) {
+                if (layer instanceof L.Polygon) {
+                    latlngs.push(layer.getLatLngs()[0]);
+                }
+            });
+            var polygon = JSON.stringify(latlngs);
+            console.log(polygon);
+            $.ajax({
+              type: 'POST',
+              url: '/get_polygon',
+              contentType: 'application/json;charset=UTF-8',
+              data: polygon,
+              success: function (response) {
+                  var userid = response
+                  window.location.href = "./computing/"+userid
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                  if (jqXHR.status == 400) {
+                      var response = JSON.parse(jqXHR.responseText);
+                      alert(response.message);  // show a pop-up with the error message
+        
+                  }
+              }
+          });
+                 
+        }
+    </script>
+</body>
+</html>

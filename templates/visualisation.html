@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo5.ico') }}">
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+</head>
+<body>
+  <header>
+    <a href="{{ url_for('index') }}">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Code Logo" class="logo">
+    </a>
+  </header>
+  
+
+  <div class="wrapper">
+  <div class="loading-animation">
+  </div>
+    <div class="tab">
+      <div class="original_tabs">
+        <button class="tablinks" onclick="openTab(event, 'map')" id="defaultOpen">Map</button>
+        <button class="tablinks" onclick="openTab(event, 'crossxtab')">Cross-Section in X</button>
+        <button class="tablinks" onclick="openTab(event, 'crossytab')">Cross-Section in Y</button>
+        <button class="tablinks" onclick="openTab(event, 'SedThick')">Quaternary Thickness</button>
+        <button class="tablinks" onclick="openTab(event, 'explorer')">Conditionning Data Explorer</button>
+      </div>
+      <div class="facies_tabs">
+        <button class="tablinks" onclick="openTab(event, '3DModel')">3D Model</button>
+        <button class="tablinks" onclick="openTab(event, 'crossxtab_facies')">Cross-Section in X</button>
+        <button class="tablinks" onclick="openTab(event, 'crossytab_facies')">Cross-Section in Y</button>
+        <button class="tablinks" onclick="openTab(event, 'virtualBorehole')">Virtual Borehole</button>
+        <button class="tablinks" onclick="openTab(event, 'download')">Export the model</button>
+      </div>
+      <div class="flipswitch-container">
+        <div class="flipswitch">
+          <input type="checkbox" name="flipswitch" class="flipswitch-cb" id="fs" onchange="toggleTabs()" checked>
+          <label class="flipswitch-label flipswitch" for="fs">
+            <div class="flipswitch-inner"></div>
+            <div class="flipswitch-switch"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div id="3DModel" class="tabcontent">
+    <iframe src="./3dplot/{{userid}}" style="width: 49%; height: 100vh; border: none;"></iframe>
+    <iframe src="./3dslices/{{userid}}" style="width: 49%; height: 100vh; border: none;"></iframe>
+    </div>
+    
+    <div id="map" class="tabcontent">
+      <img src="../plotarea/{{userid}}" alt="Area">
+    </div>
+
+    <div id="crossxtab" class="tabcontent">
+
+      <h3> You can select the position of the cross section using the buttons below the image, or by dragging the red line. The buttons below allow to show optional information in the plot. The Borehole ID can be queried in the Condtionning Data Explorer tab </h3>
+      <label class="switch">
+        <input type="checkbox" id="checkbox1_x" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox1_x">Show Conditionning Points</label>
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox2_x" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox2_x">Show BoreholesID</label>
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox3_x" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox3_x">Show Realisations</label>
+      </label>
+      <br>
+      <div class="image-canvas-container">
+        <img id="image2d_crossx" src="../serveimage/crossx/{{userid}}/0.5/0/0/0" alt="Image 1">
+        <canvas id="canvas_crossx"></canvas>
+      </div>
+
+      <div class="CrossButtons">
+        <button id="upButtonX">Move one Cell Up</button>
+        <button id="downButtonX">Move one Cell Down</button>
+      </div>
+
+
+    </div>
+
+    <div id="crossytab" class="tabcontent">
+      <h3> You can select the position of the cross section using the buttons below the image, or by dragging the red line. The buttons below allow to show optional information in the plot. The Borehole ID can be queried in the Condtionning Data Explorer tab </h3>
+      <label class="switch">
+        <input type="checkbox" id="checkbox1_y" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox1_y">Show Conditionning Points</label>
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox2_y" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox2_y">Show BoreholesID</label>
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox3_y" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox3_y">Show Realisations</label>
+      </label>
+      <br>
+      <div class="image-canvas-container">
+        <img id="image2d_crossy" src="../serveimage/crossy/{{userid}}/0.5/0/0/0" alt="Image 1">
+        <canvas id="canvas_crossy"></canvas>
+      </div>
+
+      <div class="CrossButtons">
+        <button id="downButtonY">Move one Cell Left</button>
+        <button id="upButtonY">Move one Cell Right</button>
+      </div>
+
+
+    </div>
+
+    <div id="SedThick" class="tabcontent">
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox_depth" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox_depth">Depth View</label>
+      </label>
+
+      <div class="container-wrapper">
+
+        <div id="container2_depth" class="container active" display="block">
+          <h2> Mean Surface </h2>
+          <img id="Meansurf" src="../serveimage/meanDepth/{{userid}}/2/0" alt="Mean Surface">
+        </div>
+
+        <div id="container1_depth" class="container active" display="block">
+          <h2> SwissTopo Bedrock Elevation Model </h2>
+          <img id="SwissTopoBEM" src="../serveimage/meanDepth/{{userid}}/3/0" alt="Model From Swisstopo">
+        </div>
+
+        <div id="container1_depth" class="container active" display="block">
+          <h2> Lower 95% confidence interval </h2>
+          <img id="lowerSTD" src="../serveimage/meanDepth/{{userid}}/0/0" alt="Lower 95% confidence interval">
+        </div>
+
+        <div id="container3_depth" class="container active" display="block">
+          <h2> Upper 95% confidence interval </h2>
+          <img id="upperSTD" src="../serveimage/meanDepth/{{userid}}/1/0" alt="Upper 95% confidence interval">
+        </div>
+        
+        <div id="container4_depth" class="container active" display="block">
+          <h2> Uncertainty (2 Standard Deviation) </h2>
+          <img id="upperSTD" src="../serveimage/meanDepth/{{userid}}/4/0" alt="2STD">
+        </div>
+        
+      </div>
+    </div>
+
+    <div id="explorer" class="tabcontent">
+
+      <h1>Enter the ID of the borehole:</h1>
+      <form method="post" id="form_bhQuery">
+        <input type="text" name="BHid">
+        <input type="hidden" name="userid" value={{userid}}>
+        <input type="submit" value="Borehole Query">
+      </form>
+      <br>
+      <a href="" target=”_blank” id="link"><img class="pdf_logo" id=pdflogo src="{{url_for('static', filename='app-pdf-icon.png')}}" alt="Access PDF" width=50 height=50></a>
+      <br>
+      <div class="container-wrapper">
+
+        <div id="container1" class="container" >
+          <h2> Borehole </h2>
+          <div id="data-container1"></div>
+        </div>
+        <div id="container2" class="container" >
+          <h2> Data from the SITG, after initial processing. </h2>
+          <div id="data-container2"></div>
+        </div>
+        <div id="container3" class="container" >
+          <h2> Conditionning in ArchPy </h2>
+          <div id="data-container3"></div>
+        </div>
+      </div>
+
+    </div>
+    <div id="crossxtab_facies" class="tabcontent">
+
+      <h3> You can select the position of the cross section using the buttons below the image, or by dragging the red line. The buttons below allow to show optional information in the plot. The Borehole ID can be queried in the Condtionning Data Explorer tab </h3>
+      <label class="switch">
+        <input type="checkbox" id="checkbox1_x_facies" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox1_x_facies">Show Conditionning Points</label>
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox2_x_facies" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox2_x_facies">Show BoreholesID</label>
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox3_x_facies" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox3_x_facies">Show Realisations</label>
+      </label>
+      <br>
+      <br>
+      <label for="sliderx_facies">Select Model Realization</label>
+      <div class="slider-container">
+        <button class="slider-button slider-button-left" onclick="decrementxSlider()">
+          <img src="{{ url_for('static', filename='arrowLeft.png') }}" alt="Decrease value">
+        </button>
+        <input type="range" min="0" max="{{data['nReal']}}" value="25" step="1" class="slider" id="sliderx_facies" onmouseup="updatexSlider()">
+        <button class="slider-button slider-button-right" onclick="incrementxSlider()">
+        <img src="{{ url_for('static', filename='arrowRight.png') }}" alt="Increase value">
+        </button>
+        <span id="sliderx-value">25</span>
+      </div>
+      
+      <br>
+      <div class="image-canvas-container">
+        <img id="image2d_crossx_facies" src="../serveimage/crossxfacies/{{userid}}/0.5/0/0/0/0" alt="Image 1">
+        <canvas id="canvas_crossx_facies"></canvas>
+      </div>
+
+      <div class="CrossButtons">
+        <button id="upButtonX_facies">Move one Cell Up</button>
+        <button id="downButtonX_facies">Move one Cell Down</button>
+      </div>
+
+
+    </div>
+
+    <div id="crossytab_facies" class="tabcontent">
+      <h3> You can select the position of the cross section using the buttons below the image, or by dragging the red line. The buttons below allow to show optional information in the plot. The Borehole ID can be queried in the Condtionning Data Explorer tab </h3>
+      <label class="switch">
+        <input type="checkbox" id="checkbox1_y_facies" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox1_y_facies">Show Conditionning Points</label>
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox2_y_facies" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox2_y_facies">Show BoreholesID</label>
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="checkbox3_y_facies" value="1" class="toggle-button">
+        <span class="switchslider"></span>
+        <label for="checkbox3_y_facies">Show Realisations</label>
+      </label>
+      <br>
+      <br>
+      <label for="slidery_facies">Select Model Realization</label>
+      <div class="slider-container">
+        <button class="slider-button slider-button-left" onclick="decrementySlider()">
+          <img src="{{ url_for('static', filename='arrowLeft.png') }}" alt="Decrease value">
+        </button>
+        <input type="range" min="0" max="{{data['nReal']}}" value="25" step="1" class="slider" id="slidery_facies" onmouseup="updateySlider()">
+        <button class="slider-button slider-button-right" onclick="incrementySlider()">
+          <img src="{{ url_for('static', filename='arrowRight.png') }}" alt="Increase value">
+        </button>
+        <span id="slidery-value">25</span>
+      </div>
+      
+
+      <br>
+      <div class="image-canvas-container">
+        <img id="image2d_crossy_facies" src="../serveimage/crossyfacies/{{userid}}/0.5/0/0/0/0" alt="Image 1">
+        <canvas id="canvas_crossy_facies"></canvas>
+      </div>
+
+      <div class="CrossButtons">
+        <button id="downButtonY_facies">Move one Cell Left</button>
+        <button id="upButtonY_facies">Move one Cell Right</button>
+      </div>
+
+
+    </div>
+    <div id="download" class="tabcontent">
+  <div class="dnbutton-container">
+    <a href="/download_model/{{userid}}" target="_blank">
+      <span class="dnbutton-label">Download Model</span>
+      <img class="dnbutton-image" src="{{ url_for('static', filename='3d-model-icon.png') }}" alt="Download Model">
+    </a>
+    <a href="/download_geotiff/{{userid}}" target="_blank">
+      <span class="dnbutton-label">Download GeoTiffs</span>
+      <img class="dnbutton-image" src="{{ url_for('static', filename='map-plus-icon.png') }}" alt="Download GeoTiffs">
+    </a>
+    <a href="/download_boreholes/{{userid}}" target="_blank">
+      <span class="dnbutton-label">Download Boreholes</span>
+      <img class="dnbutton-image" src="{{ url_for('static', filename='excel_logo.png') }}" alt="Download Boreholes">
+    </a>
+  </div>
+</div>
+
+  <div id="virtualBorehole" class="tabcontent">
+  <div id="mapid" style="height: 400px;"></div>
+  </div>
+  </div>
+
+  <footer>
+    <img src="{{url_for('static', filename='unine.png')}}" alt="University Logo" class="university-logo">
+    <p>&copy; 2023 PheniX Project. Information automatically generated, given with no liability</p>
+  </footer>
+
+  <script>
+
+    //Define the tabs interactions
+    function openTab(evt, tabName) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+      if (tabName == 'virtualBorehole'){
+          map.invalidateSize();
+          }
+    }
+
+    window.onload = function () {
+      startTab();
+      toggleTabs();
+    };
+
+    function startTab() {
+      document.getElementById("defaultOpen").click();
+
+    }
+
+
+    function toggleTabs() {
+      var x = document.querySelector(".facies_tabs");
+      var y = document.querySelector(".original_tabs");
+      if (document.getElementById("fs").checked) {
+        y.style.display = "flex";
+        x.style.display = "none";
+        openTab(event, 'map')
+      } else {
+        x.style.display = "flex";
+        y.style.display = "none";
+        openTab(event, 'crossxtab_facies')
+      }
+    }
+    
+
+    // Get the slider, image, and checkbox elements for cross sections
+    const image_crossx = document.getElementById('image_crossx');
+    const image2d_crossx = document.getElementById('image2d_crossx');
+
+    const checkbox1_x = document.getElementById('checkbox1_x');
+    const checkbox2_x = document.getElementById('checkbox2_x');
+    const checkbox3_x = document.getElementById('checkbox3_x');
+
+    const image_crossy = document.getElementById('image_crossy');
+    const image2d_crossy = document.getElementById('image2d_crossy');
+
+    const checkbox1_y = document.getElementById('checkbox1_y');
+    const checkbox2_y = document.getElementById('checkbox2_y');
+    const checkbox3_y = document.getElementById('checkbox3_y'); 
+
+    const checkbox1_y_facies = document.getElementById('checkbox1_y_facies');
+    const checkbox2_y_facies = document.getElementById('checkbox2_y_facies');
+    const checkbox3_y_facies = document.getElementById('checkbox3_y_facies'); 
+
+    const checkbox1_x_facies = document.getElementById('checkbox1_x_facies');
+    const checkbox2_x_facies = document.getElementById('checkbox2_x_facies');
+    const checkbox3_x_facies = document.getElementById('checkbox3_x_facies');
+    
+    const sliderx = document.getElementById("sliderx_facies");
+    const slidery = document.getElementById("slidery_facies");
+    var sliderxValueElement = document.getElementById("sliderx-value");
+    var slideryValueElement = document.getElementById("slidery-value");
+
+    const checkbox_depth = document.getElementById('checkbox_depth');
+
+    const MeansurfImg = document.getElementById('Meansurf');
+    const lowerSTDImg = document.getElementById('lowerSTD');
+    const upperSTDImg = document.getElementById('upperSTD');
+    const SwissTopoBEMImg = document.getElementById('SwissTopoBEM');
+
+    // Add event listeners to the slider and checkboxes that update the image variables when the value changes
+    checkbox1_x.addEventListener('change', updateImageCrossx);
+    checkbox2_x.addEventListener('change', updateImageCrossx);
+    checkbox3_x.addEventListener('change', updateImageCrossx);
+
+    // Add event listeners to the sliders and checkboxes that update the image variables when the value changes
+    checkbox1_y.addEventListener('change', updateImageCrossy);
+    checkbox2_y.addEventListener('change', updateImageCrossy);
+    checkbox3_y.addEventListener('change', updateImageCrossy);
+
+    // Add event listeners to the slider and checkboxes that update the image variables when the value changes
+    checkbox1_x_facies.addEventListener('change', updateImageCrossx_facies);
+    checkbox2_x_facies.addEventListener('change', updateImageCrossx_facies);
+    checkbox3_x_facies.addEventListener('change', updateImageCrossx_facies);
+
+    // Add event listeners to the sliders and checkboxes that update the image variables when the value changes
+    checkbox1_y_facies.addEventListener('change', updateImageCrossy_facies);
+    checkbox2_y_facies.addEventListener('change', updateImageCrossy_facies);
+    checkbox3_y_facies.addEventListener('change', updateImageCrossy_facies);
+
+    checkbox_depth.addEventListener('change', udpateDepth);
+
+
+    // function to update the cross section
+    function udpateDepth() {
+
+      const checkbox_depthValue = checkbox_depth.checked ? checkbox_depth.value : 0;
+      MeansurfImg.src = `../serveimage/meanDepth/{{userid}}/2/${checkbox_depthValue}`
+      lowerSTDImg.src = `../serveimage/meanDepth/{{userid}}/0/${checkbox_depthValue}`
+      upperSTDImg.src = `../serveimage/meanDepth/{{userid}}/1/${checkbox_depthValue}`
+      SwissTopoBEMImg.src = `../serveimage/meanDepth/{{userid}}/3/${checkbox_depthValue}`
+    }
+    // get the canvas element and the 2D context
+    var canvas_x = document.getElementById('canvas_crossx');
+    var ctx = canvas_x.getContext('2d');
+
+    var canvas_y = document.getElementById('canvas_crossy');
+    var cty = canvas_y.getContext('2d');
+
+    var canvas_y_facies = document.getElementById('canvas_crossy_facies');
+    var cty_facies = canvas_y_facies.getContext('2d');
+
+    var canvas_x_facies = document.getElementById('canvas_crossx_facies');
+    var ctx_facies = canvas_x_facies.getContext('2d');
+
+    // create a new image object
+    var imgx = new Image();
+    var imgy = new Image();
+    var imgy_facies = new Image();
+    var imgx_facies = new Image();
+
+    // set the image source
+    imgy.src = '../serveimage/crossy2d/{{userid}}/26';
+    imgx.src = '../serveimage/crossy2d/{{userid}}/26';
+    imgy_facies.src = '../serveimage/crossy2d/{{userid}}/26';
+    imgx_facies.src = '../serveimage/crossy2d/{{userid}}/26';
+
+    // variables to track the position of the red line
+    var lineY_x = canvas_x.height / 2;
+    var lineX_x = 0;
+    var lineY_x_facies = canvas_x_facies.height / 2;
+    var lineX_x_facies = 0;
+
+    var lineX_y = canvas_y.width / 2;
+    var lineY_y = 0;
+    var lineX_y_facies = canvas_y_facies.width / 2;
+    var lineY_y_facies = 0;
+
+    var isDraggingy = false;
+    var isDraggingx = false;
+    var isDraggingy_facies = false;
+    var isDraggingx_facies = false;
+
+    var xpos = 0.5;
+    var ypos = 0.5;
+
+    const crossxImg = document.getElementById('image2d_crossx');
+    const crossyImg = document.getElementById('image2d_crossy');
+    const crossxImg_facies = document.getElementById('image2d_crossx_facies');
+    const crossyImg_facies = document.getElementById('image2d_crossy_facies');
+    // draw the image on the canvas
+    
+    imgx.onload = function() {
+      canvas_x.width = imgx.width;
+      canvas_x.height = imgx.height;
+      ctx.drawImage(imgx, 0, 0);
+      drawLine_x();
+    };
+    imgx_facies.onload = function() {
+      canvas_x_facies.width = imgx_facies.width;
+      canvas_x_facies.height = imgx_facies.height;
+      ctx_facies.drawImage(imgx_facies, 0, 0);
+      drawLine_x_facies();
+    };
+    imgy.onload = function() {
+      canvas_y.width = imgy.width;
+      canvas_y.height = imgy.height;
+      cty.drawImage(imgy, 0, 0);
+      drawLine_y();
+    };
+    imgy_facies.onload = function() {
+      canvas_y_facies.width = imgy_facies.width;
+      canvas_y_facies.height = imgy_facies.height;
+      cty_facies.drawImage(imgy_facies, 0, 0);
+      drawLine_y_facies();
+    };
+
+    // draw a red line on the canvas
+    function drawLine_x() {
+      ctx.beginPath();
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 4;
+      ctx.moveTo(lineX_x, lineY_x);
+      ctx.lineTo(canvas_x.width, lineY_x);
+      ctx.stroke();
+    }
+    function drawLine_y() {
+      cty.beginPath();
+      cty.strokeStyle = 'red';
+      cty.lineWidth = 4;
+      cty.moveTo(lineX_y, lineY_y);
+      cty.lineTo(lineX_y, canvas_y.height);
+      cty.stroke();
+    }
+    function drawLine_x_facies() {
+      ctx_facies.beginPath();
+      ctx_facies.strokeStyle = 'red';
+      ctx_facies.lineWidth = 4;
+      ctx_facies.moveTo(lineX_x_facies, lineY_x_facies);
+      ctx_facies.lineTo(canvas_x_facies.width, lineY_x_facies);
+      ctx_facies.stroke();
+    }
+
+    function drawLine_y_facies() {
+      cty_facies.beginPath();
+      cty_facies.strokeStyle = 'red';
+      cty_facies.lineWidth = 4;
+      cty_facies.moveTo(lineX_y_facies, lineY_y_facies);
+      cty_facies.lineTo(lineX_y_facies, canvas_y_facies.height);
+      cty_facies.stroke();
+    }
+
+
+    // handle mouse down events on the canvas
+    canvas_x.addEventListener('mousedown', function(e) {
+      var rect = canvas_x.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // check if the mouse click is on the red line
+      if (y >= lineY_x - 5 && y <= lineY_x + 5) {
+        isDraggingx = true;
+        canvas_x.classList.add('dragging');
+      }
+    });
+
+    canvas_x_facies.addEventListener('mousedown', function(e) {
+      var rect = canvas_x_facies.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // check if the mouse click is on the red line
+      if (y >= lineY_x_facies - 5 && y <= lineY_x_facies + 5) {
+        isDraggingx_facies = true;
+        canvas_x_facies.classList.add('dragging');
+      }
+    });
+
+    canvas_y.addEventListener('mousedown', function(e) {
+      var rect = canvas_y.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // check if the mouse click is on the red line
+      if (x >= lineX_y - 5 && x <= lineX_y + 5) {
+        isDraggingy = true;
+        canvas_y.classList.add('dragging');
+      }
+    });
+
+    canvas_y_facies.addEventListener('mousedown', function(e) {
+      var rect = canvas_y_facies.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // check if the mouse click is on the red line
+      if (x >= lineX_y_facies - 5 && x <= lineX_y_facies + 5) {
+        isDraggingy_facies = true;
+        canvas_y_facies.classList.add('dragging');
+      }
+    });
+
+    // handle mouse move events on the canvas
+    canvas_x.addEventListener('mousemove', function(e) {
+      var rect = canvas_x.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // check if the user is dragging the red line
+      if (isDraggingx) {
+        lineY_x = y;
+        redrawx();
+      } else {
+        // check if the mouse is over the red line
+        if (y >= lineY_x - 5 && y <= lineY_x + 5) {
+          canvas_x.style.cursor = 'ns-resize';
+        } else {
+          canvas_x.style.cursor = 'auto';
+        }
+      }
+    });
+
+    canvas_x_facies.addEventListener('mousemove', function(e) {
+      var rect = canvas_x_facies.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // check if the user is dragging the red line
+      if (isDraggingx_facies) {
+        lineY_x_facies = y;
+        redrawx_facies();
+      } else {
+        // check if the mouse is over the red line
+        if (y >= lineY_x_facies - 5 && y <= lineY_x_facies + 5) {
+          canvas_x_facies.style.cursor = 'ns-resize';
+        } else {
+          canvas_x_facies.style.cursor = 'auto';
+        }
+      }
+    });
+
+    // handle mouse move events on the canvas
+    canvas_y.addEventListener('mousemove', function(e) {
+      var rect = canvas_y.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // check if the user is dragging the red line
+      if (isDraggingy) {
+        lineX_y = x;
+        redrawy();
+      } else {
+        // check if the mouse is over the red line
+        if (x >= lineX_y - 5 && x <= lineX_y + 5) {
+          canvas_y.style.cursor = 'ew-resize';
+        } else {
+          canvas_y.style.cursor = 'auto';
+        }
+      }
+    });
+
+    canvas_y_facies.addEventListener('mousemove', function(e) {
+      var rect = canvas_y_facies.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // check if the user is dragging the red line
+      if (isDraggingy_facies) {
+        lineX_y_facies = x;
+        redrawy_facies();
+      } else {
+        // check if the mouse is over the red line
+        if (x >= lineX_y_facies - 5 && x <= lineX_y_facies + 5) {
+          canvas_y_facies.style.cursor = 'ew-resize';
+        } else {
+          canvas_y_facies.style.cursor = 'auto';
+        }
+      }
+    });
+
+    // handle mouse up events on the canvas
+    canvas_x.addEventListener('mouseup', function(e) {
+      isDraggingx = false;
+      canvas_x.classList.remove('dragging');
+      updateImageCrossx(lineY_x);
+    });
+
+    // handle mouse up events on the canvas
+    canvas_y.addEventListener('mouseup', function(e) {
+      isDraggingy = false;
+      canvas_y.classList.remove('dragging');
+      updateImageCrossy(lineX_y);
+    });
+
+    canvas_x_facies.addEventListener('mouseup', function(e) {
+      isDraggingx_facies = false;
+      canvas_x_facies.classList.remove('dragging');
+      updateImageCrossx_facies(lineY_x_facies);
+    });
+
+    // handle mouse up events on the canvas
+    canvas_y_facies.addEventListener('mouseup', function(e) {
+      isDraggingy_facies = false;
+      canvas_y_facies.classList.remove('dragging');
+      updateImageCrossy_facies(lineX_y_facies);
+    });
+
+    // redraw the canvas
+    function redrawx() {
+      ctx.clearRect(0, 0, canvas_x.width, canvas_x.height);
+      ctx.drawImage(imgx, 0, 0);
+      drawLine_x();
+    }
+
+    // redraw the canvas
+    function redrawy() {
+      cty.clearRect(0, 0, canvas_y.width, canvas_y.height);
+      cty.drawImage(imgy, 0, 0);
+      drawLine_y();
+    }
+
+    function redrawx_facies() {
+      ctx_facies.clearRect(0, 0, canvas_x_facies.width, canvas_x_facies.height);
+      ctx_facies.drawImage(imgx_facies, 0, 0);
+      drawLine_x_facies();
+    }
+
+    // redraw the canvas
+    function redrawy_facies() {
+      cty_facies.clearRect(0, 0, canvas_y_facies.width, canvas_y_facies.height);
+      cty_facies.drawImage(imgy_facies, 0, 0);
+      drawLine_y_facies();
+    }
+
+    // function to update the cross section
+    function updateImageCrossx(y=-0.2) {
+      if (y > -0.1) {
+        xpos = 1 - (y / imgx.height);
+      }
+      const checkbox1Value = checkbox1_x.checked ? checkbox1_x.value : 0;
+      const checkbox2Value = checkbox2_x.checked ? checkbox2_x.value : 0;
+      const checkbox3Value = checkbox3_x.checked ? checkbox3_x.value : 0;
+
+      crossxImg.src = `../serveimage/crossx/{{userid}}/${xpos}/${checkbox1Value}/${checkbox2Value}/${checkbox3Value}`
+    }
+
+    // function to update the cross section
+    function updateImageCrossy(y=-0.2) {
+      if (y > -0.1) {
+        ypos = (y / imgy.width);
+      }
+      const checkbox1Value = checkbox1_y.checked ? checkbox1_y.value : 0;
+      const checkbox2Value = checkbox2_y.checked ? checkbox2_y.value : 0;
+      const checkbox3Value = checkbox3_y.checked ? checkbox3_y.value : 0;
+
+      crossyImg.src = `../serveimage/crossy/{{userid}}/${ypos}/${checkbox1Value}/${checkbox2Value}/${checkbox3Value}`
+    }
+
+    function updateImageCrossx_facies(y=-0.2) {
+      if (y > -0.1) {
+        xpos = 1 - (y / imgx_facies.height);
+      }
+      const checkbox1Value = checkbox1_x_facies.checked ? checkbox1_x_facies.value : 0;
+      const checkbox2Value = checkbox2_x_facies.checked ? checkbox2_x_facies.value : 0;
+      const checkbox3Value = checkbox3_x_facies.checked ? checkbox3_x_facies.value : 0;
+      const sliderValue = sliderx.value
+      crossxImg_facies.src = `../serveimage/crossxfacies/{{userid}}/${xpos}/${checkbox1Value}/${checkbox2Value}/${checkbox3Value}/${sliderValue}`
+    }
+
+    // function to update the cross section
+    function updateImageCrossy_facies(y=-0.2) {
+      if (y > -0.1) {
+        ypos = (y / imgy_facies.width);
+      }
+      const checkbox1Value = checkbox1_y_facies.checked ? checkbox1_y_facies.value : 0;
+      const checkbox2Value = checkbox2_y_facies.checked ? checkbox2_y_facies.value : 0;
+      const checkbox3Value = checkbox3_y_facies.checked ? checkbox3_y_facies.value : 0;
+      const sliderValue = slidery.value
+      crossyImg_facies.src = `../serveimage/crossyfacies/{{userid}}/${ypos}/${checkbox1Value}/${checkbox2Value}/${checkbox3Value}/${sliderValue}`
+    }
+
+    var upButtonY = document.getElementById('upButtonY');
+    var downButtonY = document.getElementById('downButtonY');
+
+    var upButtonX = document.getElementById('upButtonX');
+    var downButtonX = document.getElementById('downButtonX');
+
+    var upButtonY_facies = document.getElementById('upButtonY_facies');
+    var downButtonY_facies = document.getElementById('downButtonY_facies');
+
+    var upButtonX_facies = document.getElementById('upButtonX_facies');
+    var downButtonX_facies = document.getElementById('downButtonX_facies');
+
+    upButtonY.addEventListener('click', function() {
+      lineX_y += {{data['maxCrossy']}} * canvas_y.height;
+      updateImageCrossy(lineX_y);
+      redrawy();
+    });
+
+    downButtonY.addEventListener('click', function() {
+      lineX_y -= {{data['maxCrossy']}} * canvas_y.height;
+      updateImageCrossy(lineX_y);
+      redrawy();
+    });
+
+    upButtonX.addEventListener('click', function() {
+      lineY_x -= {{data['maxCrossx']}} * canvas_x.width;
+      updateImageCrossx(lineY_x);
+      redrawx();
+    });
+
+    downButtonX.addEventListener('click', function() {
+      lineY_x += {{data['maxCrossx']}} * canvas_x.width;
+      updateImageCrossx(lineY_x);
+      redrawx();
+    });
+
+    upButtonY_facies.addEventListener('click', function() {
+      lineX_y_facies += {{data['maxCrossy']}} * canvas_y_facies.height;
+      updateImageCrossy_facies(lineX_y_facies);
+      redrawy_facies();
+    });
+
+    downButtonY_facies.addEventListener('click', function() {
+      lineX_y_facies -= {{data['maxCrossy']}} * canvas_y_facies.height;
+      updateImageCrossy_facies(lineX_y_facies);
+      redrawy_facies();
+    });
+
+    upButtonX_facies.addEventListener('click', function() {
+      lineY_x_facies -= {{data['maxCrossx']}} * canvas_x_facies.width;
+      updateImageCrossx_facies(lineY_x_facies);
+      redrawx_facies();
+    });
+
+    downButtonX_facies.addEventListener('click', function() {
+      lineY_x_facies += {{data['maxCrossx']}} * canvas_x_facies.width;
+      updateImageCrossx_facies(lineY_x_facies);
+      redrawx_facies();
+    });
+
+    function updatexSlider() {
+    sliderxValueElement.textContent = sliderx.value;
+    updateImageCrossx_facies(lineY_x_facies);
+    }
+
+  function updateySlider() {
+    slideryValueElement.textContent = slidery.value;
+    updateImageCrossy_facies(lineX_y_facies);
+  }
+
+  function incrementxSlider() {
+    sliderx.value = parseInt(sliderx.value) + 1;
+    updatexSlider();
+  }
+
+  function decrementxSlider() {
+    sliderx.value = parseInt(sliderx.value) - 1;
+    updatexSlider();
+  }
+
+  function incrementySlider() {
+    slidery.value = parseInt(slidery.value) + 1;
+    updateySlider();
+  }
+
+  function decrementySlider() {
+    slidery.value = parseInt(slidery.value) - 1;
+    updateySlider();
+  }
+
+    $(function() {
+      $('#form_bhQuery').submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+          type: 'POST',
+          url: '/boreholeQuery',
+          data: $('form').serialize(),
+          success: function(response) {
+            $('#container1').css('display', 'block');
+            $('#container2').css('display', 'block');
+            $('#container3').css('display', 'block');
+            $('#link').css('display', 'block');
+            $('#pdflogo').css('display', 'block');
+
+            $('#data-container1').html(response.data1);
+            $('#data-container2').html(response.data2);
+            $('#data-container3').html(response.data3);
+
+            var newLinkURL = 'https://ge.ch/sitg/geodata/SITG/SONDAGES_GEOLOGIQUES/' + response.data4 +'.pdf';
+            $('#link').attr('href', newLinkURL);
+          }
+        });
+      });
+    }); 
+    
+    var map = L.map('mapid').setView([{{data['centerlat']}}, {{data['centerlon']}}], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+var polygonCoordinates = {{data['polygon']}};
+
+var polygon = L.polygon(polygonCoordinates, {
+    color: 'red',
+    weight: 4
+}).addTo(map);
+
+var marker;
+
+map.on('click', function (e) {
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+
+    // Clear previous marker
+    if (marker) {
+        map.removeLayer(marker);
+    }
+
+    // Create a new marker at the clicked location
+    marker = L.marker([lat, lng]).addTo(map);
+
+    // Send the coordinates to the Flask function using AJAX if the point is within the polygon
+    sendCoordinatesToFlask(lat, lng);
+});
+
+function sendCoordinatesToFlask(lat, lng) {
+    var coordinates = JSON.stringify({ 'lat': lat, 'lng': lng });
+    
+    // Show the loading animation
+    showLoadingAnimation();
+
+    $.ajax({
+        type: 'POST',
+        url: '/getvirtualborehole/{{userid}}',
+        contentType: 'application/json;charset=UTF-8',
+        data: coordinates,
+        xhrFields: {
+            responseType: 'blob'  // Set the response type to 'blob' to handle binary data
+        },
+        success: function (response) {
+            // Hide the loading animation
+            hideLoadingAnimation();
+
+            if (response.error) {
+                alert(response.error);  // Display the error message in an alert
+            } else {
+                // Create a blob URL from the response data
+                var blobUrl = URL.createObjectURL(response);
+
+                // Create a download link and trigger the download
+                var downloadLink = document.createElement('a');
+                downloadLink.href = blobUrl;
+                downloadLink.download = 'lithological_log.pdf';
+                downloadLink.click();
+
+                // Clean up the blob URL
+                URL.revokeObjectURL(blobUrl);
+            }
+        },
+        error: function (xhr, status, error) {
+            // Hide the loading animation
+            hideLoadingAnimation();
+
+            // Handle any errors that occur during the Ajax request
+            alert('Error: The borehole is outside the simulation zone');
+        }
+    });
+}
+
+function showLoadingAnimation() {
+    var loadingElement = document.querySelector('.loading-animation');
+    if (loadingElement) {
+        loadingElement.style.display = 'flex';
+    }
+}
+
+function hideLoadingAnimation() {
+    var loadingElement = document.querySelector('.loading-animation');
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    var loadingElement = document.querySelector('.loading-animation');
+
+    // Show the loading animation
+    if (loadingElement) {
+        loadingElement.style.display = 'flex';
+    }
+});
+
+window.addEventListener('load', function() {
+    var loadingElement = document.querySelector('.loading-animation');
+
+    // Hide the loading animation
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+    }
+});
+
+    </script>
+</body>
+</html>
+
+
