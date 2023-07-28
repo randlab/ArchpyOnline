@@ -33,7 +33,7 @@ source myenv/bin/activate # On Windows: myenv\Scripts\activate
 
 ```pip install -r requirements.txt```
 
-Geone should be installed manually from the geone repository : https://github.com/randlab/geone
+ - Geone should be installed manually from the geone repository : https://github.com/randlab/geone
 
 4. Install and run Redis Server:
 - Download and install Redis from the official website (https://redis.io/download) or use a package manager specific to your OS (e.g., apt, yum, brew).
@@ -54,16 +54,6 @@ Geone should be installed manually from the geone repository : https://github.co
    python UpdateBoreholes.py
    ```
    in order to update the local cache of the boreholes database. 
-
-## Languages
-
-The project is primarily developed using the following languages:
-
-- Python: 84.5%
-- HTML: 11.8%
-- CSS: 1.8%
-- Jupyter Notebook: 1.4%
-- JavaScript: 0.5%
 
 For more details, please refer to the repository files and their respective contents.
 
