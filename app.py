@@ -44,6 +44,16 @@ import io
 import base64
 import folium
 
+def create_folder_if_not_exist(folder_name):
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+        print(f"Folder '{folder_name}' created.")
+
+folders_to_check = ["userdata", "tmp"]
+
+for folder in folders_to_check:
+    create_folder_if_not_exist(folder)
+
 
 warnings.filterwarnings("ignore")
 app = Flask(__name__)
