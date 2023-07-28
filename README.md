@@ -59,5 +59,26 @@ For more details, please refer to the repository files and their respective cont
 
 Please ensure that you have completed all the setup steps, including installing Redis and running Celery, to ensure the proper functioning of the web interface. If you encounter any issues during setup or usage, consult the documentation or raise an issue on the repository page.
 
+## Captures
+- Initial Area selection screen
+![InitialPage](https://github.com/randlab/ArchpyOnline/assets/54106793/8802a833-a9ad-4c9d-888b-206c9ba87a90)
+- Primary data visualisation
+![DataSelection](https://github.com/randlab/ArchpyOnline/assets/54106793/618c3fd5-a1ae-4d61-9f75-0125c022a766)
+- Model parameters selection
+![DataSelection2](https://github.com/randlab/ArchpyOnline/assets/54106793/5e17adf1-7a7b-466e-af60-701b419d94af)
+
+- Computing page
+![Computing](https://github.com/randlab/ArchpyOnline/assets/54106793/b41ecdd1-0780-4e7d-b6bc-0e045c645053)
+
+- Unconsolidated sediments cross section
+![visu1](https://github.com/randlab/ArchpyOnline/assets/54106793/01aec99a-b765-48c2-8942-a358b1182b34)
+- Unconsolidated sediments depth
+![visu2](https://github.com/randlab/ArchpyOnline/assets/54106793/6525121c-5eeb-4f1f-9fac-e11e17374114)
+- 3D Visualisation
+![visu3](https://github.com/randlab/ArchpyOnline/assets/54106793/528d38de-1c57-43fc-8be8-7b84ddfabc6f)
+- Facies cross-section
+![visu4](https://github.com/randlab/ArchpyOnline/assets/54106793/65d5cb0c-ae58-4c5e-96b1-221092f8c788)
+- Virtual Borehole
+![visu5](https://github.com/randlab/ArchpyOnline/assets/54106793/dadc63df-8e44-4fe0-9e72-80ebe8606e93)
 
 
